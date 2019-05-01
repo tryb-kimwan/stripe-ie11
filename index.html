@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        #stripe-ie-workaround {
+            position: absolute;
+            left: -1000px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div>
+        <form>
+            <div id="form-content">
+                <input type="text" id="stripe-ie-workaround" />
+                <hr />
+                <div>
+                    <label for="card-number"></label>
+
+                    <div>
+                        <div id="card-number">
+                            <!-- A Stripe Element will be inserted here. -->
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <label for="card-expiry">Expiry Date <span>*</span></label>
+                        <div id="card-expiry">
+                            <!-- A Stripe Element will be inserted here. -->
+                        </div>
+                    </div>
+                    <div>
+                        <label for="card-cvv">CVV <span>*</span></label>
+                        <div id="card-cvv">
+                            <!-- A Stripe Element will be inserted here. -->
+                        </div>
+                    </div>
+                </div>
+                <input type="checkbox" id="enable-workaround" name="enable-workaround" />
+                <label for="enable-workaround">Enable workaround</label>
+            </div>
+        </form>
+    </div>
+    <script>
+        var stripe = Stripe('[INSERT_STRIPE_PUBLISHABLE_KEY_HERE]');
+        var elements = stripe.elements();
+
+        // Custom styling can be passed to options when creating an Element.
+        var style = {
+            base: {
+                // Add your base input styles here. For example:
+                fontSize: '16px',
+                color: "#32325D"
+            }
+        };
+
+        // Create an instance of the card Element.
+        var cardNumber = elements.create('cardNumber', { style: style });
+        cardNumber.mount('#card-number');
+
+        var cardExpiry = elements.create('cardExpiry', { style: style });
+        cardExpiry.mount('#card-expiry');
+
+        var cardCvc = elements.create('cardCvc', { style: style });
+        cardCvc.mount('#card-cvv');
+
+        var _shouldRefocus = true;
+        cardNumber.addEventListener('blur', function () {
+            _shouldRefocus = true;
+            setTimeout(function () {
+                StripeIEFocus(_shouldRefocus);
+            }, 500);
+        });
+        cardExpiry.addEventListener('blur', function () {
+            _shouldRefocus = true;
+            setTimeout(function () {
+                StripeIEFocus(_shouldRefocus);
+            }, 500);
+        });
+        cardCvc.addEventListener('blur', function () {
+            _shouldRefocus = true;
+            setTimeout(function () {
+                StripeIEFocus(_shouldRefocus);
+            }, 500);
+        });
+
+        cardNumber.addEventListener('focus', function () {
+            _shouldRefocus = false;
+        });
+        cardExpiry.addEventListener('focus', function () {
+            _shouldRefocus = false;
+        });
+        cardCvc.addEventListener('focus', function () {
+            _shouldRefocus = false;
+        });
+
+        function StripeIEFocus(shouldRefocus) {
+            var isWorkAroundEnabled = $('#enable-workaround')[0].checked;
+            if (shouldRefocus && isWorkAroundEnabled) {
+                $('#stripe-ie-workaround').focus();
+            }
+        }
+
+    </script>
+</body>
+
+</html>
